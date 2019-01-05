@@ -9,8 +9,6 @@
       <span v-if="sub=='lecturer'">лекции</span>
       <span v-if="sub=='practicer'">практика</span>
       <span v-if="sub=='lab'">лабораторные</span> <span class="badge badge-light">{{teacher.firstname}} {{teacher.lastname}}</span>
-
-    
     </button>
     </div>
   </div>

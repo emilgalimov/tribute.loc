@@ -3,12 +3,13 @@
 namespace app\Http\Controllers;
 
 use app\Chat;
-use app\Subject;
-use app\Student;
-use app\Teacher;
 use app\Http\Resources\Chat as ChatResource;
-use Illuminate\Http\Request;
 use app\Message;
+use app\Student;
+use app\Subject;
+use app\Teacher;
+use app\Push;
+use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
@@ -58,43 +59,37 @@ class ChatController extends Controller
 
         $user = auth()->user();
         if (Student::where('user_id', $user->id)->exists()) {
-            $group_id=$user->student->group_id;
-            $teacher_id=$id;
+            $group_id = $user->student->group_id;
+            $teacher_id = $id;
 
         } elseif (Teacher::where('user_id', $user->id)->exists()) {
-            $group_id=$id;
-            $teacher_id=$user->teacher->id;
+            $group_id = $id;
+            $teacher_id = $user->teacher->id;
         } else {
             return response()->json(['message' => ['You don`t have access']], 403);
         }
-
-
-
-        
-
-            if(!Chat::where('teacher_id',$teacher_id)->where('group_id',$group_id)->exists()){
-                if(Subject::where('group_id',$group_id)
-                            ->where(function($query) use ($teacher_id)
-                            {
-                                $query->orWhere('lecturer_id',$teacher_id)
-                                    ->orWhere('lab_id',$teacher_id)
-                                    ->orWhere('practicer_id',$teacher_id);
-                            }
-                            )->exists()){
-                $chat= new Chat;
-                $chat->teacher_id=$teacher_id;
-                $chat->group_id= $group_id;
-                $chat->save();
-                }else{
-                   return response()->json(['message' => ['You don`t have access to this chat']], 403);
+        if (!Chat::where('teacher_id', $teacher_id)->where('group_id', $group_id)->exists()) {
+            if (Subject::where('group_id', $group_id)
+                ->where(function ($query) use ($teacher_id) {
+                    $query->orWhere('lecturer_id', $teacher_id)
+                    ->orWhere('lab_id', $teacher_id)
+                    ->orWhere('practicer_id', $teacher_id);
                 }
+                )->exists()) {
+                $chat = new Chat;
+                $chat->teacher_id = $teacher_id;
+                $chat->group_id = $group_id;
+                $chat->save();
+            } else {
+                return response()->json(['message' => ['You don`t have access to this chat']], 403);
             }
+        }
 
-            $chat = Chat::where('group_id', $group_id)
-                ->where('teacher_id', $teacher_id)
-                ->with('messages.user', 'teacher', 'group')
-                ->first();
-                return new ChatResource($chat);
+        $chat = Chat::where('group_id', $group_id)
+            ->where('teacher_id', $teacher_id)
+            ->with('messages.user', 'teacher', 'group')
+            ->first();
+        return new ChatResource($chat);
 
     }
 
@@ -126,27 +121,27 @@ class ChatController extends Controller
 
         $user = auth()->user();
         if (Student::where('user_id', $user->id)->exists()) {
-            $group_id=$user->student->group_id;
-            $teacher_id=$id;
+            $group_id = $user->student->group_id;
+            $teacher_id = $id;
 
         } elseif (Teacher::where('user_id', $user->id)->exists()) {
-            $group_id=$id;
-            $teacher_id=$user->teacher->id;
+            $group_id = $id;
+            $teacher_id = $user->teacher->id;
         } else {
             return response()->json(['message' => ['You don`t have access']], 403);
         }
 
-
-        $chat=Chat::where('teacher_id',$teacher_id)->where('group_id',$group_id);
-        if(!$chat->exists()){
+        $chat = Chat::where('teacher_id', $teacher_id)->where('group_id', $group_id);
+        if (!$chat->exists()) {
             return response()->json(['message' => ['You don`t have access to this chat']], 403);
         }
 
         $message = new Message;
-        $message->chat_id=$chat->first()->id;
-        $message->user_id=$user->id;
-        $message->text=$request->text;
+        $message->chat_id = $chat->first()->id;
+        $message->user_id = $user->id;
+        $message->text = $request->text;
         $message->save();
+        //sendPush($request->text,$user);
         broadcast(new \app\Events\ExampleEvent($message));
         return response()->json(['message' => ['send']], 200);
     }
@@ -160,5 +155,29 @@ class ChatController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function sendPush($text,$user)
+    {
+        $http = new \GuzzleHttp\Client;
+        try {
+            $response = $http->post('fcm.googleapis.com' , [
+                'form_params'=> [
+                    'notification' => [
+                    "title" => "Новое сообщение", //Заглавие уведомления
+                    "body" => "", //Основной текст
+                    "icon" => "", //Иконка
+                    "click_action" => env('APP_URL') //перенаправление при нажатии на уведомление
+                    ],
+                    "to"=> $user->push->token
+                ],
+                'headers'  => [
+                    'Authorization' => env('PUSH_KEY')
+                ]
+                ]
+                );
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return response()->json('Unexpected Error', $e->getCode());
+        }
     }
 }

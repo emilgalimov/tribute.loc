@@ -19,6 +19,9 @@ class User extends Authenticatable
     public function student(){
         return $this->hasOne('app\Student');
     }
+    public function push(){
+        return $this->hasOne('app\Push');
+    }
     /**
      * The attributes that are mass assignable.
      *
