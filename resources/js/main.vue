@@ -42,11 +42,11 @@
       </ul>
     </div>
   </nav>
-  <main role="main" class="main">
-              <router-view>
-              </router-view>
-</main>
-    </div>
+    <main role="main" class="main">
+                <router-view>
+                </router-view>
+    </main>
+  </div>
   </template>
 
 

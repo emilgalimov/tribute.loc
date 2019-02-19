@@ -165,7 +165,7 @@ class ChatController extends Controller
                 'form_params'=> [
                     'notification' => [
                     "title" => "Новое сообщение", //Заглавие уведомления
-                    "body" => "", //Основной текст
+                    "body" => $text, //Основной текст
                     "icon" => "", //Иконка
                     "click_action" => env('APP_URL') //перенаправление при нажатии на уведомление
                     ],

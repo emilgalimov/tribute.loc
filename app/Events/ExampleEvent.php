@@ -33,7 +33,7 @@ class ExampleEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel("chat-room.9");
+        return new PrivateChannel("chat-room.".$this->message->chat->id);
     }
 
     public function broadcastWith()
