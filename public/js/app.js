@@ -35040,7 +35040,7 @@ var render = function() {
                 "button",
                 {
                   key: sub,
-                  staticClass: "btn btn-primary mr-2",
+                  staticClass: "btn btn-primary mr-2 mt-1",
                   attrs: { type: "button" },
                   on: {
                     click: function($event) {
@@ -35208,7 +35208,7 @@ exports = module.exports = __webpack_require__(9)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -35331,15 +35331,17 @@ window.io = __webpack_require__(104);
     send: function send() {
       var _this2 = this;
 
-      this.sendMessage({
-        token: this.$store.getters["auth/token"],
-        id: this.$route.params.id,
-        text: this.messageInput
-      }).then(function (response) {
-        _this2.messageInput = null;
-      }).catch(function (error) {
-        _this2.errors = error.response.data;
-      });
+      if (this.messageInput != null) {
+        this.sendMessage({
+          token: this.$store.getters["auth/token"],
+          id: this.$route.params.id,
+          text: this.messageInput
+        }).then(function (response) {
+          _this2.messageInput = null;
+        }).catch(function (error) {
+          _this2.errors = error.response.data;
+        });
+      }
     }
   })
 });
@@ -41601,7 +41603,7 @@ var render = function() {
       ? _c("div", [_c("alert", { attrs: { errors: _vm.errors } })], 1)
       : _vm._e(),
     _vm._v(" "),
-    _c("div", { staticClass: "row" }, [
+    _c("div", { staticClass: "row mb-5" }, [
       _c(
         "div",
         { staticClass: "col-lg-10 offset-lg-1 pl-0 pr-0 row" },
@@ -42318,17 +42320,6 @@ if (token) {
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.
  */
-
-// import Echo from 'laravel-echo'
-
-// window.Pusher = require('pusher-js');
-
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: process.env.MIX_PUSHER_APP_KEY,
-//     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-//     encrypted: true
-// });
 
 /***/ }),
 /* 145 */

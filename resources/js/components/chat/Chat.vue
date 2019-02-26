@@ -5,7 +5,7 @@
         <div v-if="errors!==null">
               <alert :errors="errors"> </alert>
         </div>
-        <div class="row">
+        <div class="row mb-5">
             <div class="col-lg-10 offset-lg-1 pl-0 pr-0 row"> 
           
                 <message v-for="(message,key) in messages" 
@@ -98,6 +98,8 @@ export default {
     }),
 
     send() {
+      if(this.messageInput!=null)
+      {
       this.sendMessage({
         token: this.$store.getters["auth/token"],
         id: this.$route.params.id,
@@ -110,6 +112,7 @@ export default {
         .catch(error => {
           this.errors = error.response.data;
         });
+    }
     }
   }
 };
